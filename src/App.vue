@@ -1,17 +1,20 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+    <Factory :robotsQuantity="2" />
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Factory from './components/Factory.vue'
+
+
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+      Factory
   }
 }
 </script>
