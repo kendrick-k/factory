@@ -1,27 +1,91 @@
 <template>
+
   <div class="app">
 
-    <h1>factory</h1>
+    <div class="container">
 
-    <h2>production line</h2>
+        <div class="notification">
 
-    <p>{{ time/1000 }}</p>
+            <h1 class="factory__title">factory</h1>
 
-    <span v-for="(robot,index) in productionLine.robots" :key = "index">
+            <p class="factory__timer">{{ time/1000 }}</p>
 
-      [{{ index }}]
-      {{ robot.activity }}
-      {{ robot.busy }}
-      {{ robot.stock.foo.length }}
-      {{ robot.stock.bar.length }}
-      {{ robot.stock.foobar.length }}
-      {{ robot.stock.money }}
-      /
+        </div>
 
-    </span>
+        <div class="columns">
+          <div class="column">
 
+          </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+
+            </div>
+            <div class="column">
+                <i class="fa fa-dolly"></i>
+            </div>
+            <div class="column">
+                <i class="fa fa-stopwatch"></i>
+            </div>
+            <div class="column">
+                <i class="fa fa-male"></i>
+
+            </div>
+            <div class="column">
+                <i class="fa fa-female"></i>
+
+            </div>
+            <div class="column">
+                <i class="fa fa-people-arrows"></i>
+
+            </div>
+            <div class="column">
+                <i class="fa fa-euro-sign"></i>
+            </div>
+        </div>
+
+        <div class="factory-robot" v-for="(robot,index) in productionLine.robots" :key = "index">
+
+            <div class="columns">
+                <div class="column">
+                    <i class="fa fa-robot"></i> [{{ index }}]
+                </div>
+                <div class="column">
+                    {{ robot.activity }}
+                </div>
+                <div class="column">
+                    {{ robot.busy }}
+                </div>
+                <div class="column">
+                    {{ robot.stock.foo.length }}
+                </div>
+                <div class="column">
+                    {{ robot.stock.bar.length }}
+                </div>
+                <div class="column">
+                    {{ robot.stock.foobar.length }}
+                </div>
+                <div class="column">
+                    {{ robot.stock.money }}
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <ul>
+                        <li class="factory-robot__foobar" v-for="(foobar,index) in robot.stock.foobar" :key = "index">
+                        {{ foobar }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+      </div>
 
   </div>
+
 </template>
 
 <script>
@@ -57,6 +121,8 @@
 
             console.log('-- mounted --')
 
+            this.message('factory opening')
+
             //this.productionLine = new ProductionLine( this.robotsQuantity )
 
             // expose globally / console use
@@ -69,25 +135,109 @@
 
             clearInterval( this.timer )
 
-        }
+        },
+
+        methods: {
+
+            message( message ) {
+
+                this.$buefy.snackbar.open({
+                    message: message,
+                    type: 'is-warning',
+                    position: 'is-bottom',
+                    actionText: null,
+                    indefinite: false,
+                    onAction: () => {
+                        this.$buefy.toast.open({
+                            message: message,
+                            queue: false
+                        })
+                    }
+                })
+
+            }
+
+        },
+
+
 
     }
 
 </script>
 
-<style scoped>
-h3 {
-  margin: 40px 0 0;
+<style  lang="scss">
+
+h1 {
+
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
+
 a {
   color: #42b983;
 }
+
+.factory {
+
+    &__title {
+        margin: 3vw;
+        font-size: 3rem;
+    }
+
+    &__title,&__timer {
+         animation: fadeIn ease 20s;
+         -webkit-animation: fadeIn ease 20s;
+         -moz-animation: fadeIn ease 20s;
+         -o-animation: fadeIn ease 20s;
+         -ms-animation: fadeIn ease 20s;
+    }
+
+    &-robot {
+
+        border-bottom: 1px #efeeee solid;
+        margin-bottom: 25px;
+
+        &__foobar {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: .8rem;
+            color:#777;
+        }
+
+    }
+
+}
+
+@keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+@-moz-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+@-webkit-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+@-o-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+@-ms-keyframes fadeIn {
+    0% {opacity:0;}
+    100% {opacity:1;}
+}
+
+    .snackbar .text {
+        text-transform: uppercase !important;
+    }
+
 </style>

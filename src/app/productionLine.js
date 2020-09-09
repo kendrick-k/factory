@@ -45,6 +45,12 @@ class ProductionLine {
 
         //this.log( time )
 
+        for (let id = 0; id < this.robots.length; id++) {
+
+            this.getRobot( id ).render()
+
+        }
+
     }
 
 

@@ -15,7 +15,7 @@ class Robot {
 
         this.debug = true
 
-        this.busy = false
+        this.busy = null
 
         this.id = id
 
@@ -24,6 +24,10 @@ class Robot {
         this.stock = new Stock()
 
         this.activity = null
+
+        this.activityPrevious = null
+
+        this.actionSell = this.actionFoobar = false
 
     }
 
@@ -37,7 +41,7 @@ class Robot {
 
             this.timer = setTimeout( () => {
 
-                    this.busy = false
+                    this.busy = null
 
                     this.log( 'busy > finished' )
 
@@ -70,17 +74,40 @@ class Robot {
 
 
 
-    move() {
+    getActivityPrevious() {
 
-        this.setBusy( 5 , ()=>{} )   // 5 seconds Idle
+        return this.activityPrevious
 
     }
 
 
 
-    stop() {
+    move( next ) {
 
-        this.setBusy( false , ()=>{} )
+        if ( !this.isBusy() ) {
+
+            //this.activity = 'move'
+
+            this.setBusy( 5 , next )   // 5 seconds Idle
+
+        }
+
+    }
+
+
+
+    moveCheck( next ) {
+
+        console.log(this.activity,this.activityPrevious)
+
+        if (this.activity !== this.activityPrevious) {
+
+            this.log('*** move ***')
+
+            this.move( next )
+        } else {
+            next()
+        }
 
     }
 
@@ -89,6 +116,9 @@ class Robot {
     buildFoo() {
 
         if ( !this.isBusy() ) {
+
+            this.activityPrevious = '' + this.activity
+            this.activity = 'buildFoo'
 
             this.setBusy( 1 ,
                 () => { this.stock.foo.push( uid() ) }
@@ -110,6 +140,9 @@ class Robot {
 
         if ( !this.isBusy() ) {
 
+            this.activityPrevious = '' + this.activity
+            this.activity = 'buildBar'
+
             this.setBusy( this.getRandom( 0.5 , 2 ) ,
                 () => { this.stock.bar.push( uid() ) }
                 )
@@ -130,7 +163,45 @@ class Robot {
 
         if ( !this.isBusy() ) {
 
+            if ( this.stock.foo.length > 0 && this.stock.bar.length > 0 ) {
 
+                this.setBusy( 2 ,
+
+                    () => {
+
+                        this.activityPrevious = '' + this.activity
+                        this.activity = 'buildFooBar'
+
+                        // take foo (may be lost)
+
+                        // eslint-disable-next-line no-unused-vars
+                        let foo = this.stock.foo.pop()
+
+                        if (Math.random()*100 < 60) {
+
+                            this.log('build pass')
+
+                            let bar = this.stock.bar.pop()
+
+                            this.stock.foobar.push( foo + '-' + bar )
+
+                        } else {
+
+                            // no build
+                            this.log('no build')
+
+                        }
+
+                    }
+
+                )
+
+            } else {
+
+                // no build
+                this.log('no build ( not enough elements )')
+
+            }
 
         } else {
 
@@ -139,6 +210,102 @@ class Robot {
         }
 
         return this
+
+    }
+
+
+
+    sellFoobar() {
+
+        if ( !this.isBusy() ) {
+
+            this.setBusy( 1 ,
+                () => {
+
+                    this.activityPrevious = '' + this.activity
+                    this.activity = 'sellFoobar'
+
+                    let sell = this.stock.foobar.length
+
+                    if ( sell > 5 ) sell = 5
+
+                    let a = this.stock.foobar.length,
+                        b = this.stock.foobar.length - sell
+
+                    for (let i = a; i > b; i--) {
+
+                        this.stock.foobar.splice( i - 1 , 1 )
+
+                        this.stock.money++  // 1€
+
+                    }
+
+                }
+
+            )
+
+        } else {
+
+            this.log( 'nop : busy' )
+
+        }
+
+        return this
+
+    }
+
+
+
+    buyRobot() {
+
+
+
+    }
+
+
+
+    render() {
+
+        //this.log(this.activity)
+
+        if ( !this.isBusy() ) {
+
+            this.log(this.activity)
+
+            // sell batch / 10
+            if (this.stock.foobar.length >= 3 || this.actionSell) {
+                this.actionSell = true
+                this.moveCheck( this.sellFoobar.bind(this) )
+                if (this.stock.foobar.length==0)
+                    this.actionSell = false
+
+            } else
+
+            if (this.stock.foo.length >= 5 && this.stock.bar.length >= 5 || this.actionFoobar) {
+
+                this.actionFoobar = true
+                this.moveCheck( this.buildFooBar.bind(this) )
+
+                if (this.stock.foo.length==0 || this.stock.bar.length==0)
+                    this.actionFoobar = false
+
+            } else
+
+            if (this.stock.bar.length <= 5) {
+
+                this.moveCheck( this.buildBar.bind(this) )
+
+            } else
+
+            if (this.stock.foo.length <= 5) {
+
+                this.moveCheck( this.buildFoo.bind(this) )
+
+            }
+
+
+
+        }
 
     }
 
