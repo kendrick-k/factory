@@ -11,13 +11,15 @@ class Robot {
 
 
 
-    constructor( id ) {
+    constructor( id , productionLineRef ) {
 
         this.debug = true
 
         this.busy = null
 
         this.id = id
+
+        this.productionLine = productionLineRef
 
         this.timer = null
 
@@ -105,7 +107,9 @@ class Robot {
             this.log('*** move ***')
 
             this.move( next )
+
         } else {
+            this.log('>>> nomove ***')
             next()
         }
 
@@ -272,32 +276,56 @@ class Robot {
 
             this.log(this.activity)
 
+            if (this.stock.money >= 3 && this.stock.foo.length >= 6) {
+
+                // buy robot
+
+                this.log(' // buy robot // ')
+
+                this.productionLine.robotAdd()
+
+                this.stock.money = this.stock.money - 3
+
+                this.stock.foo.splice(-6, 6)
+
+            } else
+
             // sell batch / 10
             if (this.stock.foobar.length >= 3 || this.actionSell) {
+
+                if (!this.actionSell)
+                    this.moveCheck( this.sellFoobar.bind(this) )
+                else
+                    this.sellFoobar()
+
                 this.actionSell = true
-                this.moveCheck( this.sellFoobar.bind(this) )
+
                 if (this.stock.foobar.length==0)
                     this.actionSell = false
 
             } else
 
-            if (this.stock.foo.length >= 5 && this.stock.bar.length >= 5 || this.actionFoobar) {
+            if (this.stock.foo.length >= 6 && this.stock.bar.length >= 6 || this.actionFoobar) {
+
+                if (!this.actionFoobar)
+                    this.moveCheck( this.buildFooBar.bind(this) )
+                else
+                    this.buildFooBar()
 
                 this.actionFoobar = true
-                this.moveCheck( this.buildFooBar.bind(this) )
 
                 if (this.stock.foo.length==0 || this.stock.bar.length==0)
                     this.actionFoobar = false
 
             } else
 
-            if (this.stock.bar.length <= 5) {
+            if (this.stock.bar.length < 6) {
 
                 this.moveCheck( this.buildBar.bind(this) )
 
             } else
 
-            if (this.stock.foo.length <= 5) {
+            if (this.stock.foo.length < 6) {
 
                 this.moveCheck( this.buildFoo.bind(this) )
 

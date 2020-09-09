@@ -10,6 +10,10 @@
 
             <p class="factory__timer">{{ time/1000 }}</p>
 
+            <p class="factory__money">{{ money }} €</p>
+
+            <p class="factory__robots"><i class="fa fa-robot"></i> {{ productionLine.robots.length }}</p>
+
         </div>
 
         <div class="columns">
@@ -58,16 +62,16 @@
                     {{ robot.busy }}
                 </div>
                 <div class="column">
-                    {{ robot.stock.foo.length }}
+                    <span :class="getClassFoo( robot.activity )">{{ robot.stock.foo.length }}</span>
                 </div>
                 <div class="column">
-                    {{ robot.stock.bar.length }}
+                    <span :class="getClassBar( robot.activity )">{{ robot.stock.bar.length }}</span>
                 </div>
                 <div class="column">
-                    {{ robot.stock.foobar.length }}
+                    <span :class="getClassFoobar( robot.activity )">{{ robot.stock.foobar.length }}</span>
                 </div>
                 <div class="column">
-                    {{ robot.stock.money }}
+                    <span :class="getClassMoney( robot.activity )">{{ robot.stock.money }}</span>
                 </div>
             </div>
             <div class="columns">
@@ -104,11 +108,18 @@
 
         data() {
             return {
+                money: 0,
                 time: 0,
                 timer: setInterval( () => {
 
                     this.time += 100
                     this.productionLine.render( this.time )
+
+                    this.money = this.getMoney()
+
+                    if ( this.robotsQuantity == 20 ) {
+                        clearInterval( this.timer )
+                    }
 
                 }, 100 ),
 
@@ -138,6 +149,33 @@
         },
 
         methods: {
+
+            getMoney() {
+
+                let m = 0
+
+                    for ( let i=0 ; i < this.productionLine.robots.length ; i++)
+                        m += this.productionLine.getRobot( i ).stock.money
+
+                return m
+
+            },
+
+            getClassFoo( a ) {
+                if ( a == 'buildFoo' ) return 'active'
+            },
+
+            getClassBar( a ) {
+                if ( a == 'buildBar' ) return 'active'
+            },
+
+            getClassFoobar( a ) {
+                if ( a == 'buildFooBar' ) return 'active'
+            },
+
+            getClassMoney( a ) {
+                if ( a == 'sellFoobar' ) return 'active'
+            },
 
             message( message ) {
 
@@ -187,7 +225,7 @@ a {
         font-size: 3rem;
     }
 
-    &__title,&__timer {
+    &__title,&__timer,&__money,&__robots {
          animation: fadeIn ease 20s;
          -webkit-animation: fadeIn ease 20s;
          -moz-animation: fadeIn ease 20s;
@@ -199,6 +237,10 @@ a {
 
         border-bottom: 1px #efeeee solid;
         margin-bottom: 25px;
+
+        .active {
+            font-weight: 900;
+        }
 
         &__foobar {
             display: inline-block;

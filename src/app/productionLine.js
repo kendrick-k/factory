@@ -26,7 +26,7 @@ class ProductionLine {
 
             for (let id = 0; id < robotsQuantity; id++) {
 
-                this.robots.push( new Robot( id ) )
+                this.robotAdd()
 
             }
 
@@ -36,6 +36,16 @@ class ProductionLine {
         this.log( this.robots )
 
 
+
+    }
+
+
+
+    robotAdd() {
+
+        let id = this.robots.length
+
+        this.robots.push( new Robot( id , this ) )
 
     }
 
