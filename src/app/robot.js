@@ -6,11 +6,17 @@ import Stock from './stock'
 import uid from 'uid'
 
 
-
+/**
+ * Robot
+ */
 class Robot {
 
 
-
+    /**
+     *
+     * @param id
+     * @param productionLineRef
+     */
     constructor( id , productionLineRef ) {
 
         this.debug = true
@@ -25,15 +31,20 @@ class Robot {
 
         this.stock = new Stock()
 
-        this.activity = null
+        this.activity = 'init'
 
-        this.activityPrevious = null
+        this.activityPrevious = 'init'
 
         this.actionSell = this.actionFoobar = false
 
     }
 
 
+    /**
+     *
+     * @param seconds
+     * @param callback
+     */
     // eslint-disable-next-line no-unused-vars
     setBusy( seconds , callback ) {
 
@@ -67,7 +78,10 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @returns {null|*}
+     */
     isBusy() {
 
         return this.busy
@@ -76,6 +90,10 @@ class Robot {
 
 
 
+    /**
+     *
+     * @returns {null|*}
+     */
     getActivityPrevious() {
 
         return this.activityPrevious
@@ -83,7 +101,10 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @param next
+     */
     move( next ) {
 
         if ( !this.isBusy() ) {
@@ -97,12 +118,13 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @param next
+     */
     moveCheck( next ) {
 
-        console.log(this.activity,this.activityPrevious)
-
-        if (this.activity !== this.activityPrevious) {
+        if (this.activity !== this.activityPrevious || this.activity == null || this.activityPrevious == null) {
 
             this.log('*** move ***')
 
@@ -116,7 +138,10 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @returns {Robot}
+     */
     buildFoo() {
 
         if ( !this.isBusy() ) {
@@ -139,7 +164,10 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @returns {Robot}
+     */
     buildBar() {
 
         if ( !this.isBusy() ) {
@@ -162,7 +190,10 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @returns {Robot}
+     */
     buildFooBar() {
 
         if ( !this.isBusy() ) {
@@ -218,7 +249,10 @@ class Robot {
     }
 
 
-
+    /**
+     *
+     * @returns {Robot}
+     */
     sellFoobar() {
 
         if ( !this.isBusy() ) {
@@ -260,17 +294,11 @@ class Robot {
 
 
 
-    buyRobot() {
-
-
-
-    }
-
-
-
+    /**
+     * called by productionLine every 100ms
+     * here is the logic
+     */
     render() {
-
-        //this.log(this.activity)
 
         if ( !this.isBusy() ) {
 
@@ -290,8 +318,8 @@ class Robot {
 
             } else
 
-            // sell batch / 10
-            if (this.stock.foobar.length >= 3 || this.actionSell) {
+            // sell batch
+            if (this.stock.money < 3 && ( this.stock.foobar.length >= 3 || this.actionSell )) {
 
                 if (!this.actionSell)
                     this.moveCheck( this.sellFoobar.bind(this) )
@@ -305,7 +333,7 @@ class Robot {
 
             } else
 
-            if (this.stock.foo.length >= 6 && this.stock.bar.length >= 6 || this.actionFoobar) {
+            if (this.stock.money < 3 && ( this.stock.foo.length >= 5 && this.stock.bar.length >= 3 || this.actionFoobar )) {
 
                 if (!this.actionFoobar)
                     this.moveCheck( this.buildFooBar.bind(this) )
@@ -319,26 +347,29 @@ class Robot {
 
             } else
 
-            if (this.stock.bar.length < 6) {
-
-                this.moveCheck( this.buildBar.bind(this) )
-
-            } else
-
-            if (this.stock.foo.length < 6) {
+            if ( this.stock.foo.length < 6 ) {
 
                 this.moveCheck( this.buildFoo.bind(this) )
 
+            } else
+
+            if ( this.stock.bar.length < 6 ) {
+
+                this.moveCheck( this.buildBar.bind(this) )
+
             }
-
-
 
         }
 
     }
 
 
-
+    /**
+     * getRandom
+     * @param min
+     * @param max
+     * @returns {number}
+     */
     getRandom( min, max ) {
 
         min = Math.ceil(min * 10)
@@ -349,7 +380,11 @@ class Robot {
     }
 
 
-
+    /**
+     * log
+     * @param m
+     * @param d
+     */
     log( m , d = null ) {
 
         if (this.debug)

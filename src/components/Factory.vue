@@ -19,6 +19,8 @@
         <div class="columns">
           <div class="column">
 
+              <!--chart ref="chart" :chart-data="this.productionLine.chartGetData()"></chart-->
+
           </div>
         </div>
 
@@ -96,9 +98,15 @@
 
     import ProductionLine from '../app/productionLine'
 
+    //import Chart from '../app/chart.vue'
+
     export default {
 
         name: 'Factory',
+
+        components: {
+        //    Chart
+        },
 
         props: {
 
@@ -110,31 +118,45 @@
             return {
                 money: 0,
                 time: 0,
-                timer: setInterval( () => {
+                timer: null,
 
-                    this.time += 100
-                    this.productionLine.render( this.time )
+                productionLine: null,
 
-                    this.money = this.getMoney()
-
-                    if ( this.robotsQuantity == 20 ) {
-                        clearInterval( this.timer )
-                    }
-
-                }, 100 ),
-
-                productionLine: new ProductionLine( this.robotsQuantity )
+                chartData: null
 
             }
+        },
+
+        created() {
+
+            this.productionLine = new ProductionLine( this.robotsQuantity )
+
         },
 
         mounted() {
 
             console.log('-- mounted --')
 
-            this.message('factory opening')
+            this.timer = setInterval( () => {
 
-            //this.productionLine = new ProductionLine( this.robotsQuantity )
+                this.time += 100
+                this.productionLine.render( this.time )
+
+                this.money = this.getMoney()
+
+                if ( this.productionLine.robots.length == 20 ) {
+
+                    console.log(' -- stop -- ',this.timer)
+
+                    clearInterval( this.timer )
+
+                    this.message('factory closing')
+
+                }
+
+            }, 100 )
+
+            this.message('factory opening')
 
             // expose globally / console use
 

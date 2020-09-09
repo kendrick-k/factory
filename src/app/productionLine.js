@@ -6,10 +6,16 @@ import Robot from './robot'
 
 
 
+/**
+ * ProductionLine in charge of Robots
+ */
 class ProductionLine {
 
 
-
+    /**
+     *
+     * @param robotsQuantity
+     */
     constructor( robotsQuantity ) {
 
         this.debug = true
@@ -40,7 +46,9 @@ class ProductionLine {
     }
 
 
-
+    /**
+     * adds a robot (used by Robot, 'this' reference)
+     */
     robotAdd() {
 
         let id = this.robots.length
@@ -50,7 +58,9 @@ class ProductionLine {
     }
 
 
-
+    /**
+     * called by Factory.vue
+     */
     render(  ) {
 
         //this.log( time )
@@ -64,7 +74,11 @@ class ProductionLine {
     }
 
 
-
+    /**
+     * getRobot
+     * @param index
+     * @returns {*}
+     */
     getRobot( index ) {
 
         if ( index > -1 && index < this.robots.length )
@@ -75,7 +89,10 @@ class ProductionLine {
     }
 
 
-
+    /**
+     * log for debug purposes
+     * @param m
+     */
     log( m ) {
 
         if (this.debug)
